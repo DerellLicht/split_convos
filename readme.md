@@ -1,4 +1,4 @@
-# Claude Conversation Splitter — Setup Instructions
+# Claude Conversation Splitter -- Setup Instructions
 
 This script takes the single monolithic JSON file from claude.ai's **Export
 data** feature and splits it into individual, readable Markdown files — one
@@ -63,3 +63,6 @@ depending on current UI). You'll receive a download link by email for a
 - This script depends on the structure of claude.ai's export format as of
   mid-2026. If Anthropic changes that format later, the script may need
   small updates to match.
+- This project is licensed under Creative Commons CC0 1.0 Universal;  
+  See the file LICENSE.txt for detailed information about this license  
+
