@@ -46,7 +46,7 @@ depending on current UI). You'll receive a download link by email for a
    ```
    python split_convos.py conversations.json
    ```  
-   (or `python3 split_convos.py conversations.json on Mac/Linux)`
+   (or `python3 split_convos.py conversations.json` on Mac/Linux)
    
 3. You should see a list of generated `.md` filenames printed out. Any
    diagrams Claude generated during those conversations will also be saved
