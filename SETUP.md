@@ -39,12 +39,14 @@ depending on current UI). You'll receive a download link by email for a
 
 ## 3. Run the script
 
-1. Put `split_convos.py` and your exported `.json` file in the same folder.
+1. Put `split_convos.py` and your exported `conversations.json` file in the same folder.  
+   NOTE: the Exported package will contain several JSON files;
+         the one you want to split is `conversations.json`.
 2. Open a command prompt / terminal in that folder and run:
    ```
-   python split_convos.py [name_of_your_json_file]
+   python split_convos.py conversations.json
    ```  
-   (or `python3 split_convos.py [name_of_your_json_file]` on Mac/Linux)
+   (or `python3 split_convos.py conversations.json on Mac/Linux)`
    
 3. You should see a list of generated `.md` filenames printed out. Any
    diagrams Claude generated during those conversations will also be saved
