@@ -59,7 +59,7 @@ def tool_use_note(block, out_dir=None):
             svg_path = os.path.join(out_dir, svg_filename)
             with open(svg_path, "w", encoding="utf-8") as f:
                 f.write(fixed_svg)
-            return f"![{title}]({svg_filename})"
+            return f"![{title}](<{svg_filename}>)"
         # HTML/interactive widgets can't be flattened to a static image
         return f"*? Generated an interactive visual: \"{title}\" (not recoverable as a static image)*"
     return f"*? Used tool: {name}*"
@@ -107,7 +107,7 @@ def colorize_svg_tree(svg_code):
         if "box" in classes:
             in_box = True
         if in_box and tag in ("rect", "circle", "ellipse"):
-            el.set("fill", "#fbfaf7")
+            el.set("fill", "#D9D8D3")
             el.set("stroke", "#888780")
         elif ramp and tag in ("rect", "circle", "ellipse"):
             stops = RAMPS[ramp]
@@ -123,7 +123,41 @@ def colorize_svg_tree(svg_code):
                 el.set("fill", stops["600"] if stops else "#5f5e5a")
                 el.set("font-size", "12px")
             el.set("font-family", "Arial, Helvetica, sans-serif")
-        for child in el:
+
+        # Orphan heading labels (class="th") that aren't already sitting on a
+        # box/ramp background are invisible-by-design against dark-themed
+        # viewers: their fill is a hardcoded dark color that assumes a light
+        # page background, which claude.ai's widget host normally guarantees
+        # but a standalone extracted SVG cannot. Give any such label its own
+        # background chip so it survives regardless of viewer theme.
+        children = list(el)
+        insert_offset = 0
+        for idx, child in enumerate(children):
+            child_tag = child.tag.split("}")[-1]
+            child_classes = classes_of(child)
+            if (not in_box) and child_tag == "text" and "th" in child_classes \
+                    and "dominant-baseline" not in child.attrib:
+                text_content = (child.text or "").strip()
+                font_size = 14.0
+                try:
+                    cx = float(child.get("x", "0"))
+                    cy = float(child.get("y", "0"))
+                except ValueError:
+                    cx = cy = 0.0
+                width = round(len(text_content) * font_size * 0.43 + font_size * 1.86, 1)
+                height = round(font_size * 1.6, 1)
+                chip = ET.Element("rect", {
+                    "x": str(round(cx - width / 2, 1)),
+                    "y": str(round(cy - font_size, 1)),
+                    "width": str(width),
+                    "height": str(height),
+                    "rx": "4",
+                    "fill": "#D9D8D3",
+                    "stroke": "#888780",
+                    "stroke-width": "0.5",
+                })
+                el.insert(idx + insert_offset, chip)
+                insert_offset += 1
             walk(child, ramp, in_box)
 
     walk(root, None, False)
@@ -136,7 +170,7 @@ def render_files_note(files):
         fname = f.get("file_name", "attached_file")
         if fname.lower().endswith(IMAGE_EXTS):
             parts.append(
-                f"![{fname}]({fname})\n\n"
+                f"![{fname}](<{fname}>)\n\n"
                 f"*(Image not included in export — save `{fname}` from claude.ai "
                 f"and place it in this same folder for the link above to work.)*"
             )
