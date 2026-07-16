@@ -215,6 +215,19 @@ for conv in conversations:
 
     lines = [f"# {name}", "", f"*{created[:10] if created else ''}*", ""]
 
+    summary = (conv.get("summary") or "").strip()
+    # The field's own text already leads with a "**Conversation Overview**"
+    # heading; drop it since the <summary> tag already supplies that label.
+    summary = re.sub(r"^\*\*Conversation Overview\*\*\s*\n+", "", summary)
+    if summary:
+        lines.append("<details>")
+        lines.append("<summary>Conversation Overview</summary>")
+        lines.append("")
+        lines.append(summary)
+        lines.append("")
+        lines.append("</details>")
+        lines.append("")
+
     for msg in conv.get("chat_messages", []):
         sender = msg.get("sender")
         header = "## You" if sender == "human" else "## Claude"
