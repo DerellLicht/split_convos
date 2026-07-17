@@ -167,7 +167,7 @@ def colorize_svg_tree(svg_code):
 def render_files_note(files):
     parts = []
     for f in files:
-        fname = f.get("file_name", "attached_file")
+        fname = f.get("file_name") or f.get("file_uuid") or "attached_file"
         if fname.lower().endswith(IMAGE_EXTS):
             parts.append(
                 f"![{fname}](<{fname}>)\n\n"
